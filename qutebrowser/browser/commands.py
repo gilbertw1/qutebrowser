@@ -885,7 +885,10 @@ class CommandDispatcher:
         tab = self._current_widget()
 
         try:
-            tab.zoom.set_factor(float(level) / 100)
+            if zoom is None:
+                tab.zoom.set_default()
+            else:
+                tab.zoom.set_factor(float(level) / 100)
         except ValueError:
             raise cmdexc.CommandError("Can't zoom {}%!".format(level))
         message.info("Zoom level: {}%".format(level), replace=True)

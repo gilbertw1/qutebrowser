@@ -531,8 +531,11 @@ class WebKitHistory(browsertab.AbstractHistory):
             self._history.itemAt(i).setUserData(data)
         cur_data = self._history.currentItem().userData()
         if cur_data is not None:
+            zoom_changed = True
+            if 'zoom-changed' in cur_data:
+                zoom_changed = cur_data['zoom-changed']
             if 'zoom' in cur_data:
-                self._tab.zoom.set_factor(cur_data['zoom'])
+                self._tab.zoom.set_factor(cur_data['zoom'], changed=zoom_changed)
             if ('scroll-pos' in cur_data and
                     self._tab.scroller.pos_px() == QPoint(0, 0)):
                 QTimer.singleShot(0, functools.partial(

@@ -442,8 +442,11 @@ class WebEngineHistory(browsertab.AbstractHistory):
         stream, _data, cur_data = tabhistory.serialize(items)
         qtutils.deserialize_stream(stream, self._history)
         if cur_data is not None:
+            zoom_changed = False
+            if 'zoom-changed' in cur_data:
+                zoom_changed = cur_data['zoom-changed']
             if 'zoom' in cur_data:
-                self._tab.zoom.set_factor(cur_data['zoom'])
+                self._tab.zoom.set_factor(cur_data['zoom'], changed=zoom_changed)
             if ('scroll-pos' in cur_data and
                     self._tab.scroller.pos_px() == QPoint(0, 0)):
                 QTimer.singleShot(0, functools.partial(
@@ -580,7 +583,7 @@ class WebEngineTab(browsertab.AbstractTab):
     def _restore_zoom(self):
         if self._saved_zoom is None:
             return
-        self.zoom.set_factor(self._saved_zoom)
+        self.zoom.set_factor(self._saved_zoom, changed=False)
         self._saved_zoom = None
 
     def openurl(self, url):

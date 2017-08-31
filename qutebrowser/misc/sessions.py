@@ -183,10 +183,13 @@ class SessionManager(QObject):
         if tab.history.current_idx() == idx:
             pos = tab.scroller.pos_px()
             data['zoom'] = tab.zoom.factor()
+            data['zoom-changed'] = tab.zoom.default_zoom_changed
             data['scroll-pos'] = {'x': pos.x(), 'y': pos.y()}
         elif user_data is not None:
             if 'zoom' in user_data:
                 data['zoom'] = user_data['zoom']
+            if 'zoom-changed' in user_data:
+                data['zoom-changed'] = user_data['zoom-changed']
             if 'scroll-pos' in user_data:
                 pos = user_data['scroll-pos']
                 data['scroll-pos'] = {'x': pos.x(), 'y': pos.y()}
@@ -338,6 +341,10 @@ class SessionManager(QObject):
                 user_data['zoom'] = data['zoom']
             elif 'zoom' in histentry:
                 user_data['zoom'] = histentry['zoom']
+
+            if 'zoom-changed' in histentry:
+                user_data['zoom-changed'] = histentry['zoom-changed']
+
 
             if 'scroll-pos' in data:
                 # The scroll position was accidentally stored in 'data' instead

@@ -234,8 +234,8 @@ class AbstractZoom(QObject):
         super().__init__(parent)
         self._widget = None
         self._win_id = win_id
-        self._default_zoom_changed = False
         self._init_neighborlist()
+        self.default_zoom_changed = False
         objreg.get('config').changed.connect(self._on_config_changed)
 
         # # FIXME:qtwebengine is this needed?
@@ -251,7 +251,6 @@ class AbstractZoom(QObject):
             if not self._default_zoom_changed:
                 factor = float(config.get('ui', 'default-zoom')) / 100
                 self._set_factor_internal(factor)
-            self._default_zoom_changed = False
             self._init_neighborlist()
 
     def _init_neighborlist(self):
@@ -277,24 +276,29 @@ class AbstractZoom(QObject):
     def _set_factor_internal(self, factor):
         raise NotImplementedError
 
-    def set_factor(self, factor, *, fuzzyval=True):
+    def set_factor(self, factor, *, fuzzyval=True, changed=True):
         """Zoom to a given zoom factor.
 
         Args:
             factor: The zoom factor as float.
             fuzzyval: Whether to set the NeighborLists fuzzyval.
+            changed: Whether or not the zoom level was explicitly changed.
         """
         if fuzzyval:
             self._neighborlist.fuzzyval = int(factor * 100)
         if factor < 0:
             raise ValueError("Can't zoom to factor {}!".format(factor))
-        self._default_zoom_changed = True
+
+        if changed:
+            self.default_zoom_changed = True
+
         self._set_factor_internal(factor)
 
     def factor(self):
         raise NotImplementedError
 
     def set_default(self):
+        self.default_zoom_changed = False
         default_zoom = config.get('ui', 'default-zoom')
         self._set_factor_internal(float(default_zoom) / 100)
 
@@ -742,6 +746,9 @@ class AbstractTab(QWidget):
         if not self.title():
             self.title_changed.emit(self.url().toDisplayString())
         self._handle_auto_insert_mode(ok)
+
+        if not self.zoom.default_zoom_changed:
+            self.zoom.set_default()
 
     @pyqtSlot()
     def _on_history_trigger(self):
