@@ -923,6 +923,10 @@ Switch to the previous tab, or switch [count] tabs back.
 ==== count
 How many tabs to switch back.
 
+[[tabs-toggle]]
+=== tabs-toggle
+Toggles visibility of the tab bar.
+
 [[unbind]]
 === unbind
 Syntax: +:unbind 'key' ['mode']+

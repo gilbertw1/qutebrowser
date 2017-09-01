@@ -1144,6 +1144,21 @@ class CommandDispatcher:
         cmdutils.check_overflow(new_idx, 'int')
         self._tabbed_browser.tabBar().moveTab(cur_idx, new_idx)
 
+
+    @cmdutils.register(instance='command-dispatcher', scope='window')
+    def tabs_toggle(self):
+        """Toggle visibility of the tab bar.
+
+        If the tab bar is currently visible, then the tab bar is hidden.
+        Conversely if it is currently hidden, the it will make the tab bar
+        visible.
+        """
+        tabbar = self._tabbed_browser.tabBar()
+        if (tabbar.isVisible()):
+            tabbar.setVisible(False)
+        else:
+            tabbar.setVisible(True)
+
     @cmdutils.register(instance='command-dispatcher', scope='window',
                        maxsplit=0, no_replace_variables=True)
     def spawn(self, cmdline, userscript=False, verbose=False, detach=False):
